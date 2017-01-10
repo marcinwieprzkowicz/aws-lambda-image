@@ -32,6 +32,9 @@ class ImageResizer {
             console.log("Resizing to: " + (this.options.directory || "in-place"));
 
             var img = gm(image.data).geometry(this.options.size.toString());
+            if ( "format" in this.options ) {
+                img = img.setFormat(this.options.format);
+            }
             if ( "orientation" in this.options ) {
                 img = img.autoOrient();
             }
@@ -65,11 +68,7 @@ class ImageResizer {
                 }
             }
 
-            if ( "format" in this.options ) {
-                img.toBuffer(this.options.format, toBufferHandler);
-            } else {
-                img.toBuffer(toBufferHandler);
-            }
+            img.toBuffer(toBufferHandler);
         });
     }
 }

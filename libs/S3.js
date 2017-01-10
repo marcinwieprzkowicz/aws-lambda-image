@@ -2,6 +2,7 @@
 
 const ImageData = require("./ImageData");
 const aws       = require("aws-sdk");
+const path      = require("path");
 
 const client  = new aws.S3({ apiVersion: "2006-03-01" });
 
@@ -47,10 +48,20 @@ class S3 {
      * @return Promise
      */
     static putObject(image) {
+        var extname = path.extname(image.fileName);
+        var parsedPath = {
+            dirname: path.dirname(image.fileName),
+            basename: path.basename(image.fileName, extname)
+        };
+
+        var fileName = path.join(parsedPath.dirname, parsedPath.basename + '.jpg')
+            .replace(/\s*/g, '')
+            .toLowerCase();
+
         return new Promise((resolve, reject) => {
             const params = {
                 Bucket:       image.bucketName,
-                Key:          image.fileName,
+                Key:          fileName,
                 Body:         image.data,
                 Metadata:     { "img-processed": "true" },
                 ContentType:  image.headers.ContentType,
